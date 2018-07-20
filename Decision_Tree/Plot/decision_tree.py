@@ -1,17 +1,14 @@
 import pandas as pd
-from os.path import join, dirname
-from sys import getsizeof
-import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import column, row
+from bokeh.palettes import cividis
 from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Decision_Tree.Plot.get_data import get_all_colors, set_new_dataset
+from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
 from Decision_Tree.Plot.instance import Instance
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""GLOBAL VARIABLES START"""""""""""""""""""""""""""""""""
 """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
@@ -253,57 +250,16 @@ def apply_changes():
     compute new data source to be used for the new tree. change values of several variables to be used before
     sending them to get_bokeh_data
     """
-    global circles, rectangles, best_circles, best_rectangles
-    p.renderers.remove(circles)
-    p.renderers.remove(rectangles)
-    best_root_plot.renderers.remove(best_circles)
-    best_root_plot.renderers.remove(best_rectangles)
-    p.legend[0].items.pop(0)
-    best_root_plot.legend[0].items.pop(0)
-    p.select(name="multi_lines").visible = False
-    p.select(name="arrowLabels").visible = False
-    p.select(name="decision_text").visible = False
-
-    p.legend.visible = False
-    circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
-                       name="circles", legend="attribute_type",
-                       color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                         factors=Instance().attr_list))
-    circles.visible = False
-    rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
-                        legend="attribute_type",
-                        color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                          factors=Instance().attr_list))
-    rectangles.visible = False
-    best_circles = best_root_plot.circle("y", "x", radius=circle_radius, radius_units='screen',
-                                         source=best_root_plot_data_source, name="circles", legend="attribute_type",
-                                         color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                           factors=Instance().attr_list))
-    best_circles.visible = False
-    best_rectangles = best_root_plot.rect("y", "x", rect_width, rect_height, source=best_root_plot_data_source,
-                                          name="rectangles", legend="attribute_type",
-                                          color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                            factors=Instance().attr_list))
-    best_rectangles.visible = False
-    circles.visible = True
-    best_circles.visible = True
     modify_individual_plot("customized", selected_root)
     modify_individual_plot("optimal", "")
-    hover = HoverTool(names=["circles", "rectangles"])
-    hover.tooltips = TOOLTIPS
-    wheel = WheelZoomTool()
-    p.tools = [hover, wheel]
-    best_root_plot.tools = [hover, wheel]
-    p.toolbar.active_scroll = wheel
-    p.toolbar_location = "below"
-    p.legend.visible = True
     if decision_button.label == "Hide Labels":
         p.select(name="decision_text").visible = True
     if arrow_button.label == "Hide Nodes Decisions":
         p.select(name="arrowLabels").visible = True
     p.select(name="multi_lines").visible = True
-
     apply_changes_button.disabled = False
+
+
 apply_changes_button.on_click(apply_changes)
 
 
@@ -326,10 +282,11 @@ def create_plot(mode):
     circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                        name="circles", legend="attribute_type",
                        color=factor_cmap('attribute_type',
-                                         palette=list(get_all_colors()), factors=Instance().attr_list))
+                                         palette=get_all_colors(), factors=Instance().all_attr_list))
     rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
-                        legend="attribute_type", color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                                   factors=Instance().attr_list))
+                        legend="attribute_type", color=factor_cmap('attribute_type',
+                                                                   palette=get_all_colors(),
+                                                                   factors=Instance().all_attr_list))
     p.select(name="rectangles").visible = False
 
     # Drawing on the rectangles
