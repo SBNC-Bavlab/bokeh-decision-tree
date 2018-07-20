@@ -4,16 +4,17 @@
 <head>
   <meta charset="utf-8">
   <title>Interactive Decision Tree: {{ framework }}</title>
-
 </head>
 
 <body>
   <div style="width: 1300px; margin: 0 auto;">
     <h1 style="color:slateblue; text-align:center;" >Visualization of Decision Trees</h1>
     <div style="margin-left: auto; margin-right: auto; width: 60em; font-family: Arial" >We are a group of undergraduate student working on research project. In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.</div>
-    <div style="margin-left: auto; margin-right: auto; width: 60em; font-family: Arial" >Data set Definitions:</div>
-    <button onclick="hide()" style="alignment: left">About</button>
+    <div style="margin-left: auto; margin-right: auto; width: 60em; font-family: Arial" >Data sets:</div>
+    <div style="margin-left: auto; margin-right: auto; width: 60em; font-family: Arial" ></div>
+    <button onclick="hide()" style="alignment: left; border-radius: 8px;">About</button>
     <div id="Bokeh" style="display: block; margin-left: auto; margin-right: auto">{{ script|safe }}</div>
+
     <div id="About" style="text-align:center; margin-left: auto; margin-right: auto; display: none">
       <h2 style="color:dimgrey; text-align:center" >About</h2>
       <hr style="width: 10%; margin-left: auto; margin-right: auto;">
@@ -21,9 +22,7 @@
         <img src="https://pbs.twimg.com/profile_images/730662586992230400/lPApNiEi_400x400.jpg" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
       </a>
     </div>
-
   </div>
-
 </body>
 <script>
   function hide() {
