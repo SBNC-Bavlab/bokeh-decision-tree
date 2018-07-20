@@ -35,8 +35,8 @@ arrow_button = Toggle(width=275, label="Hide Nodes Decisions", button_type="warn
 root_select = Select(title="Choose Root Attribute:",
                      options=['None'] + [attr for attr in list(Instance().cmap.keys())[:-1]],
                      value="None")
-dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens", "car"])
-dataset_slider = Slider(start=0, end=50, value=0, step=1, title="Test Set Percentage Split")
+dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens", "mushrooms"])
+dataset_slider = Slider(start=10, end=50, value=10, step=1, title="Test Set Percentage Split")
 plot_width = 1000
 plot_height = int(plot_width * 950 / 1400)
 rect_width = 2
@@ -47,48 +47,6 @@ TOOLTIPS = [
     ("Instance Number", "@{instances}"),
     ("Decision", "@{decision}")
 ]
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
-"""vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
-file_button = Button(width=275, label="Upload Data Set", button_type="success")
-file_source = ColumnDataSource({'contents': [], 'name': []})
-_upload_js = """
-function read_file(filename) {
-    var reader = new FileReader();
-    reader.onload = load_handler;
-    reader.onerror = error_handler;
-    // readAsDataURL represents the file's data as a base64 encoded string
-    reader.readAsDataURL(filename);
-}
-
-function load_handler(event) {
-    var b64string = event.target.result;
-    source.data = {'contents' : [b64string], 'name':[input.files[0].name]};
-    source.change.emit()
-}
-
-function error_handler(evt) {
-    if(evt.target.error.name == "NotReadableError") {
-        alert("Can't read file!");
-    }
-}
-
-var input = document.createElement('input');
-input.setAttribute('type', 'file');
-input.onchange = function(){
-    if (window.FileReader) {
-        read_file(input.files[0]);
-    } else {
-        alert('FileReader is not supported in this browser');
-    }
-}
-input.click();
-"""
-file_button.callback = CustomJS(args=dict(source=file_source), code=_upload_js)
-"""^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"""
-"""Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^""
 """""""""""""""""""""""""""""""""" GLOBAL VARIABLES END """""""""""""""""""""""""""""""""""""""""
@@ -165,12 +123,12 @@ def create_figure():
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
     best_root_plot, best_arrow_data_source, best_circles, best_rectangles = create_plot("optimal")
 
-    tab1 = Panel(child=p, title="New Tree")
+    tab1 = Panel(child=p, title="New Tree with Selected Root")
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
-    tree_tab = Tabs(tabs=[tab1, tab2])
+    tree_tab = Tabs(tabs=[tab1, tab2], width=1000)
 
     main_frame = row(column(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
-                            decision_button, arrow_button, dataset_select, file_button), tree_tab)
+                            decision_button, arrow_button, dataset_select), tree_tab)
     return main_frame
 
 
@@ -327,11 +285,17 @@ def apply_changes():
                                           color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                                             factors=Instance().attr_list))
     best_rectangles.visible = False
-
     circles.visible = True
     best_circles.visible = True
     modify_individual_plot("customized", selected_root)
     modify_individual_plot("optimal", "")
+    hover = HoverTool(names=["circles", "rectangles"])
+    hover.tooltips = TOOLTIPS
+    wheel = WheelZoomTool()
+    p.tools = [hover, wheel]
+    best_root_plot.tools = [hover, wheel]
+    p.toolbar.active_scroll = wheel
+    p.toolbar_location = "below"
     p.legend.visible = True
     if decision_button.label == "Hide Labels":
         p.select(name="decision_text").visible = True
@@ -341,34 +305,6 @@ def apply_changes():
 
     apply_changes_button.disabled = False
 apply_changes_button.on_click(apply_changes)
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
-"""vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
-
-
-def file_callback(_attr, _old, _new):
-    raw_contents = file_source.data['contents'][0]
-    prefix, b64_contents = raw_contents.split(",", 1)
-    file_contents = base64.b64decode(b64_contents)
-    size = getsizeof(file_contents)
-    if size < 10**7:
-        fname = dirname(__file__) + "/../Data/" + file_source.data['name'][0]
-        with open(fname, "wb") as f:
-            f.write(file_contents)
-    dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
-    if Instance().data_set:
-        dataset_select.options = [item for item in dataset_select.options if item != Instance().data_set]
-    Instance().update_data_set(file_source.data['name'][0])
-    dataset_select.value = Instance().data_set
-
-
-file_source.on_change('data', file_callback)
-
-
-"""^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"""
-"""Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
 def create_plot(mode):

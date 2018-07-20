@@ -40,10 +40,8 @@ def set_new_dataset(new):
     attr_values = []
     attr_list = []
     cmap = {}
-    if new in ["car", "lens"]:
+    if new in ["lens", "mushrooms"]:
         file = dirname(__file__) + "/../Data/" + new + ".txt"
-    else:
-        file = dirname(__file__) + "/../Data/" + new
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(",")
