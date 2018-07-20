@@ -39,14 +39,12 @@ def set_new_dataset(new):
     data = []
     attr_values = []
     attr_list = []
-    cmap = {}
     if new in ["lens", "mushrooms"]:
         file = dirname(__file__) + "/../Data/" + new + ".txt"
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(",")
             attr_list[-1] = attr_list[-1].strip()
-            cmap = {attr: color[j] for j, attr in enumerate(attr_list)}
             attr_values = [set() for _ in attr_list]
         else:
             datum = line.split(",")
@@ -58,10 +56,10 @@ def set_new_dataset(new):
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
     shuffle(data)
     try:
-        instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap,
+        instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict,
                                      Instance().test_percentage)
     except:
-        instance = Instance(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
+        instance = Instance(data, attr_values, attr_list, attr_values_dict, attr_dict)
 
 
 def get_all_colors():

@@ -4,7 +4,6 @@ from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import column, row
-from bokeh.palettes import cividis
 from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
 from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
@@ -23,17 +22,17 @@ attr_info = Paragraph(text="""
 set_new_dataset("lens")
 arrow_list = {"current": [], "previous": []}
 selected_root = ""
-attribute_checkbox = CheckboxGroup(labels=[attr for attr in list(Instance().cmap.keys())
+attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance().attr_list
                                            if attr != Instance().attr_list[-1]],
-                                   active=[i for i, attr in enumerate(list(Instance().cmap.keys()))])
+                                   active=[i for i, attr in enumerate(Instance().attr_list)])
 apply_changes_button = Button(width=275, label="Apply Changes", button_type="success")
 decision_button = Toggle(width=275, label="Hide Labels", button_type="warning")
-arrow_button = Toggle(width=275, label="Hide Nodes Decisions", button_type="warning")
+arrow_button = Toggle(width=275, label="Hide Arrow Labels", button_type="warning")
 root_select = Select(title="Choose Root Attribute:",
-                     options=['None'] + [attr for attr in list(Instance().cmap.keys())[:-1]],
+                     options=['None'] + Instance().attr_list[:-1],
                      value="None")
 dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens", "mushrooms"])
-dataset_slider = Slider(start=10, end=50, value=10, step=1, title="Test Set Percentage Split")
+dataset_slider = Slider(start=10, end=50, value=10, step=5, title="Test Set Percentage Split")
 plot_width = 1000
 plot_height = int(plot_width * 950 / 1400)
 rect_width = 2
@@ -103,7 +102,7 @@ def create_figure():
         dataset_select, dataset_slider, p, arrow_data_source, circles, rectangles, best_circles,\
         best_rectangles, best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props
 
-    active_attributes_list = [attr for attr in Instance().cmap.keys() if attr != Instance().attr_list[-1]]
+    active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
     source, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], selected_root)
     # X and y range calculated
     periods = [str(i) for i in range(0, width+1)]
@@ -137,7 +136,7 @@ def update_attributes(new):
     global selected_root
     active_attributes_list[:] = []
     for i in new:
-        active_attributes_list.append(list(Instance().cmap.keys())[i])
+        active_attributes_list.append(Instance().attr_list[i])
     if selected_root != '' and selected_root not in active_attributes_list:
         apply_changes_button.disabled = True
     else:
@@ -149,7 +148,7 @@ attribute_checkbox.on_click(update_attributes)
 
 def modify_test_percentage(_attr, _old, new):
     Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
-                      Instance().attr_values_dict, Instance().attr_dict, Instance().cmap,
+                      Instance().attr_values_dict, Instance().attr_dict,
                       new)
 
 
@@ -198,11 +197,11 @@ def turn_arrow_labels_off(new):
     if new:
         p.select(name="arrowLabels").visible = False
         best_root_plot.select(name="arrowLabels").visible = False
-        arrow_button.label = "Show Nodes Decisions"
+        arrow_button.label = "Show Arrow Labels"
     else:
         p.select(name="arrowLabels").visible = True
         best_root_plot.select(name="arrowLabels").visible = True
-        arrow_button.label = "Hide Nodes Decisions"
+        arrow_button.label = "Hide Arrow Labels"
 
 
 arrow_button.on_click(turn_arrow_labels_off)
@@ -214,7 +213,7 @@ def update_root(_attr, _old, new):
     """
     global selected_root
     new = root_select.options.index(new)
-    method_type_selected = list(Instance().cmap.keys())[new - 1]
+    method_type_selected = Instance().attr_list[new - 1]
     if new == 0:
         selected_root = ''
         apply_changes_button.disabled = False
@@ -237,9 +236,9 @@ def change_dataset(_attr, _old, new):
     set_new_dataset(new)
     selected_root = ""
     apply_changes()
-    attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
-    attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
-    root_select.options = ['None'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
+    attribute_checkbox.labels = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
+    attribute_checkbox.active = [i for i, attr in enumerate(Instance().attr_list)]
+    root_select.options = ['None'] + [attr for attr in Instance().attr_list[:-1]]
 
 
 dataset_select.on_change('value', change_dataset)
@@ -254,7 +253,7 @@ def apply_changes():
     modify_individual_plot("optimal", "")
     if decision_button.label == "Hide Labels":
         p.select(name="decision_text").visible = True
-    if arrow_button.label == "Hide Nodes Decisions":
+    if arrow_button.label == "Hide Arrow Labels":
         p.select(name="arrowLabels").visible = True
     p.select(name="multi_lines").visible = True
     apply_changes_button.disabled = False
