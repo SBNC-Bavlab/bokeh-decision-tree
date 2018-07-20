@@ -289,13 +289,6 @@ def apply_changes():
     best_circles.visible = True
     modify_individual_plot("customized", selected_root)
     modify_individual_plot("optimal", "")
-    hover = HoverTool(names=["circles", "rectangles"])
-    hover.tooltips = TOOLTIPS
-    wheel = WheelZoomTool()
-    p.tools = [hover, wheel]
-    best_root_plot.tools = [hover, wheel]
-    p.toolbar.active_scroll = wheel
-    p.toolbar_location = "below"
     p.legend.visible = True
     if decision_button.label == "Hide Labels":
         p.select(name="decision_text").visible = True
