@@ -3,8 +3,8 @@ from os.path import dirname
 from random import randint, shuffle
 from Decision_Tree.Plot.instance import Instance
 
-all_attrs_list = []
 color = []
+
 
 for i in range(30):
     color.append('#%06X' % randint(0, 0xFFFFFF))
