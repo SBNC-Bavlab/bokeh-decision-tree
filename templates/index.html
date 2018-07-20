@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Interactive Decision Tree: {{ framework }}</title>
+
+</head>
+
+<body>
+  <div style="width: 1300px; margin: 0 auto;">
+    <h1 style="color:slateblue; text-align:center;" >Visualization of Decision Trees</h1>
+    <div style="margin-left: auto; margin-right: auto; width: 60em; font-family: Arial" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vehicula dolor quis erat porttitor, non blandit dui luctus. Cras aliquam ultricies ex ut dignissim. Vestibulum egestas accumsan nisi, id fermentum magna cursus ut. Pellentesque eu ullamcorper nibh. Ut condimentum orci id nisl elementum pretium vel id magna. Morbi sit amet lorem ut velit dapibus condimentum. Nullam nec mauris sed elit luctus vehicula. Phasellus at pharetra lectus, at finibus justo. Sed id sapien ac odio viverra gravida.</div>
+    <button onclick="hide()" style="alignment: left">About</button>
+    <div id="Bokeh" style="display: block; margin-left: auto; margin-right: auto">{{ script|safe }}</div>
+    <div id="About" style="text-align:center; margin-left: auto; margin-right: auto; display: none">
+      <h2 style="color:dimgrey; text-align:center" >About</h2>
+      <hr style="width: 10%; margin-left: auto; margin-right: auto;">
+      <a href="http://analyticslab.sabanciuniv.edu/">
+        <img src="https://pbs.twimg.com/profile_images/730662586992230400/lPApNiEi_400x400.jpg" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+      </a>
+    </div>
+
+  </div>
+
+</body>
+<script>
+  function hide() {
+    const b = document.getElementById("Bokeh");
+    const a = document.getElementById("About");
+    if (b.style.display === "none") {
+        b.style.display = "block";
+        a.style.display = "none";
+    } else {
+        b.style.display = "none";
+        a.style.display = "block";
+    }
+  }
+</script>
+</html>
