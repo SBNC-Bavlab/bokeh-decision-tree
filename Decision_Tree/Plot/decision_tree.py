@@ -27,16 +27,14 @@ selected_root = ""
 attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance().attr_list
                                            if attr != Instance().attr_list[-1]],
                                    active=[i for i, attr in enumerate(Instance().attr_list)])
-apply_changes_button = Button(width=275, label="Apply Changes", button_type="success")
-decision_button = Toggle(width=275, label="Hide Labels", button_type="warning")
-arrow_button = Toggle(width=275, label="Hide Arrow Labels", button_type="warning")
+apply_changes_button = Button(label="Apply Changes", button_type="success")
+decision_button = Toggle(label="Hide Labels", button_type="warning")
+arrow_button = Toggle(label="Hide Arrow Labels", button_type="warning")
 root_select = Select(title="Choose Root Attribute:",
                      options=['None'] + Instance().attr_list[:-1],
                      value="None")
 dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens", "mushrooms"])
 dataset_slider = Slider(start=10, end=50, value=10, step=5, title="Test Set Percentage Split")
-plot_width = 1000
-plot_height = int(plot_width * 950 / 1400)
 circle_radius = 5
 TOOLTIPS = [
     ("Gini Index Value", "@{nonLeafNodes_stat}"),
@@ -121,10 +119,10 @@ def create_figure():
 
     tab1 = Panel(child=p, title="New Tree with Selected Root")
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
-    tree_tab = Tabs(tabs=[tab1, tab2], width=1000)
+    tree_tab = Tabs(tabs=[tab1, tab2])
 
     main_frame = row(column(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
-                            decision_button, arrow_button, dataset_select), tree_tab)
+                            decision_button, arrow_button, dataset_select, sizing_mode="scale_width"), tree_tab, sizing_mode="scale_width")
     return main_frame
 
 
@@ -270,7 +268,7 @@ def create_plot(mode):
     hover = HoverTool(names=["circles"])
     wheel = WheelZoomTool()
     _p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
-                plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods),
+                x_range=groups, y_range=list(periods),
                 tooltips=TOOLTIPS)
     _p.axis.visible = False
     _arrow_data_source, label = \
@@ -335,7 +333,7 @@ def draw_arrow(source, _p, mode="draw"):
                         angle = -pi/2
                     else:
                         angle = atan((y_end - y_start) / (x_end - x_start) *
-                                     (len(groups) / len(periods)) * (plot_height/plot_width))
+                                     (len(groups) / len(periods)) * (_p.plot_height/_p.plot_width))
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
