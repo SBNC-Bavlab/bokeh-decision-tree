@@ -1,24 +1,26 @@
 import pandas as pd
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
+from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import column, row
 from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
-from math import atan
+from math import atan, pi
 from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
 from Decision_Tree.Plot.instance import Instance
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""GLOBAL VARIABLES START"""""""""""""""""""""""""""""""""
 """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
 
-
-circles = rectangles = best_circles = best_rectangles = active_attributes_list = data_source = width = depth = \
-    level_width = acc = periods = roups = p = arrow_data_source = best_root_plot_data_source = best_root_plot = \
-    best_arrow_data_source = tree_tab = text_props = None
+circles = best_circles = active_attributes_list = data_source = \
+    level_width = p = arrow_data_source = best_root_plot_data_source = best_root_plot = \
+    best_arrow_data_source = tree_tab = None
+periods = groups = list()
+width = depth = acc = int()
+text_props = dict()
 attr_info = Paragraph(text="""
    Choose Attributes:
-""", width=200)
+""")
 set_new_dataset("lens")
 arrow_list = {"current": [], "previous": []}
 selected_root = ""
@@ -35,8 +37,6 @@ dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens",
 dataset_slider = Slider(start=10, end=50, value=10, step=5, title="Test Set Percentage Split")
 plot_width = 1000
 plot_height = int(plot_width * 950 / 1400)
-rect_width = 2
-rect_height = 0.5
 circle_radius = 5
 TOOLTIPS = [
     ("Gini Index Value", "@{nonLeafNodes_stat}"),
@@ -67,7 +67,7 @@ def modify_individual_plot(mode, root):
     modular plot
     """
     global p, data_source, active_attributes_list, arrow_data_source, width, depth, level_width, acc, periods, groups,\
-        best_root_plot, best_root_plot_data_source, best_arrow_data_source, current_label
+        best_root_plot, best_root_plot_data_source, best_arrow_data_source
 
     data, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], root)
     data = pd.DataFrame.from_dict(data)
@@ -85,7 +85,7 @@ def modify_individual_plot(mode, root):
         best_root_plot.y_range.factors = periods = [str(i) for i in range(0, width + 1)]
         best_root_plot.x_range.factors = groups = [str(x) for x in range(0, depth + 2)]
         arrow_data, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
-                                      "get_data")
+                                   "get_data")
         best_arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
         best_root_plot.title.text = "Decision Tree" + ("\t\t\t\tAccuracy (%): "
                                                        + str(round(acc * 100, 1)) if acc else "")
@@ -99,8 +99,8 @@ def create_figure():
     """
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source,\
         attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select,\
-        dataset_select, dataset_slider, p, arrow_data_source, circles, rectangles, best_circles,\
-        best_rectangles, best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props
+        dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles,\
+        best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props
 
     active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
     source, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], selected_root)
@@ -113,11 +113,11 @@ def create_figure():
     get_new_data_source(df)
     data_source = ColumnDataSource(data=df)
     text_props = {"source": data_source, "text_align": "center", "text_baseline": "middle"}
-    p, arrow_data_source, circles, rectangles = create_plot("customized")
+    p, arrow_data_source, circles = create_plot("customized")
 
     best_root_plot_data = data_source.data.copy()
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
-    best_root_plot, best_arrow_data_source, best_circles, best_rectangles = create_plot("optimal")
+    best_root_plot, best_arrow_data_source, best_circles = create_plot("optimal")
 
     tab1 = Panel(child=p, title="New Tree with Selected Root")
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
@@ -160,11 +160,9 @@ def toggle_mode_set(new):
     toggles settings
     """
     p.select(name="circles").visible = not new
-    p.select(name="rectangles").visible = new
     p.select(name="detailed_text").visible = new
 
     best_root_plot.select(name="circles").visible = not new
-    best_root_plot.select(name="rectangles").visible = new
     best_root_plot.select(name="detailed_text").visible = new
 
     if decision_button.label == "Hide Labels":
@@ -265,62 +263,57 @@ apply_changes_button.on_click(apply_changes)
 def create_plot(mode):
     """
     create glyphs, text and arrows and insert them into the figures
-    :param is_previous: is the customized or ideal tree being created?
+    :param mode: customized or optimal?
     :return: plot p and the arrow data source
     """
     title = "Decision Tree " + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1)) if acc else "")
-    hover = HoverTool(names=["circles", "rectangles"])
+    hover = HoverTool(names=["circles"])
     wheel = WheelZoomTool()
-    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
-               plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods),
-               tooltips=TOOLTIPS)
-    p.axis.visible = False
-    arrow_data_source, label = draw_arrow(data_source.data, p)
-    p.toolbar.active_scroll = wheel
-    p.add_layout(label)
-    circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
-                       name="circles", legend="attribute_type",
-                       color=factor_cmap('attribute_type',
-                                         palette=get_all_colors(), factors=Instance().all_attr_list))
-    rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
-                        legend="attribute_type", color=factor_cmap('attribute_type',
-                                                                   palette=get_all_colors(),
-                                                                   factors=Instance().all_attr_list))
-    p.select(name="rectangles").visible = False
+    _p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
+                plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods),
+                tooltips=TOOLTIPS)
+    _p.axis.visible = False
+    _arrow_data_source, label = \
+        draw_arrow(data_source.data if mode == "customized" else best_root_plot_data_source.data, _p)
+    _p.toolbar.active_scroll = wheel
+    _p.add_layout(label)
+    _circles = _p.circle("y", "x", radius=circle_radius, radius_units='screen',
+                         source=data_source if mode == "customized" else best_root_plot_data_source,
+                         name="circles", legend="attribute_type",
+                         color=factor_cmap('attribute_type',
+                                           palette=get_all_colors(), factors=Instance().all_attr_list))
+    _p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=_p.x_range),
+            name="detailed_text", text="nonLeafNodes_stat", **text_props, text_font_size="7pt")
 
-    # Drawing on the rectangles
-    p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range),
-           name="detailed_text", text="nonLeafNodes_stat", **text_props, text_font_size="7pt")
+    _p.text(x="y", y=dodge("x", 0.3, range=_p.x_range), name="detailed_text", text="attribute_type", **text_props,
+            text_font_size="8pt", text_font_style="bold")
 
-    p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type", **text_props,
-           text_font_size="8pt", text_font_style="bold")
+    _p.text(x="y", y=dodge("x", -0.3, range=_p.x_range), name="detailed_text", text="instances", **text_props,
+            text_font_size="8pt")
+    _p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props,
+            text_font_size="8pt")
 
-    p.text(x="y", y=dodge("x", -0.3, range=p.x_range), name="detailed_text", text="instances", **text_props,
-           text_font_size="8pt")
-    p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props,
-           text_font_size="8pt")
+    _p.select(name="detailed_text").visible = False
 
-    p.select(name="detailed_text").visible = False
-
-    p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
-           name="decision_text", text="decision", **text_props, text_font_size="8pt")
+    _p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
+            name="decision_text", text="decision", **text_props, text_font_size="8pt")
 
     # Final settings
-    p.outline_line_color = "white"
-    p.grid.grid_line_color = None
-    p.axis.axis_line_color = None
-    p.axis.major_tick_line_color = None
-    p.axis.major_label_standoff = 0
-    p.legend.orientation = "vertical"
-    p.legend.location = "top_right"
-    return p, arrow_data_source, circles, rectangles
+    _p.outline_line_color = "white"
+    _p.grid.grid_line_color = None
+    _p.axis.axis_line_color = None
+    _p.axis.major_tick_line_color = None
+    _p.axis.major_label_standoff = 0
+    _p.legend.orientation = "vertical"
+    _p.legend.location = "top_right"
+    return _p, _arrow_data_source, _circles
 
 
-def draw_arrow(source, p, mode="draw"):
+def draw_arrow(source, _p, mode="draw"):
     """
     draws and returns arrows and the labels. calculates arrow widths from number of instances
     :param source: source
-    :param p: plot p to be drawn on
+    :param _p: plot p to be drawn on
     :param mode: when mode isn't draw, it means that the function is being called only for getting the arrow data source
     :return: returns arrow data source, arrows and labels
     """
@@ -338,8 +331,11 @@ def draw_arrow(source, p, mode="draw"):
                     x_end = source["y"][x_offset + index + sum(level_width[: i + 1])]
                     y_start = source["x"][offset + j]
                     y_end = source["x"][index + sum(level_width[: i + 1])]
-                    angle = atan((y_end - y_start) / (x_end - x_start) *
-                                 (len(groups) / len(periods)) * (plot_height/plot_width))
+                    if not x_end-x_start:
+                        angle = -pi/2
+                    else:
+                        angle = atan((y_end - y_start) / (x_end - x_start) *
+                                     (len(groups) / len(periods)) * (plot_height/plot_width))
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
@@ -363,14 +359,12 @@ def draw_arrow(source, p, mode="draw"):
     arrow_coordinates["instances"] = [1 + 7 * (int(x) - arrow_instance_min) /
                                       (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
-    arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
+    _arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     if mode == "draw":
-        p.multi_line(line_width="instances", line_alpha=0.7, line_color="darkgray",
-                     name="multi_lines",
-                     xs="xs", ys="ys", source=arrow_data_source)
+        _p.multi_line(line_width="instances", line_alpha=0.7, line_color="darkgray",
+                      name="multi_lines",
+                      xs="xs", ys="ys", source=_arrow_data_source)
     label = LabelSet(x='x_avg', y='y_avg', angle="angle",
                      name="arrowLabels", text="label_name",
-                     text_font_size="8pt", text_color="darkgray", source=arrow_data_source)
-    return arrow_data_source, label
-
-
+                     text_font_size="8pt", text_color="darkgray", source=_arrow_data_source)
+    return _arrow_data_source, label
