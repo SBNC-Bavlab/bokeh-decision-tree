@@ -119,12 +119,12 @@ def create_figure():
 
     tab1 = Panel(child=p, title="New Tree with Selected Root")
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
-    tree_tab = Tabs(tabs=[tab1, tab2])
+    tree_tab = Tabs(tabs=[tab1, tab2], width=p.plot_width)
 
     widgets = widgetbox(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
-                        decision_button, arrow_button, dataset_select)
+                        decision_button, arrow_button, dataset_select, sizing_mode="stretch_both")
 
-    main_frame = layout([[widgets, tree_tab]], sizing_mode="scale_height")
+    main_frame = layout([[widgets, tree_tab]])
     return main_frame
 
 
