@@ -3,7 +3,7 @@ from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
-from bokeh.layouts import column, row
+from bokeh.layouts import widgetbox, layout
 from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
 from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
@@ -121,8 +121,10 @@ def create_figure():
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
     tree_tab = Tabs(tabs=[tab1, tab2])
 
-    main_frame = row(column(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
-                            decision_button, arrow_button, dataset_select, sizing_mode="scale_width"), tree_tab, sizing_mode="scale_width")
+    widgets = widgetbox(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
+                        decision_button, arrow_button, dataset_select)
+
+    main_frame = layout([[widgets, tree_tab]], sizing_mode="scale_height")
     return main_frame
 
 
