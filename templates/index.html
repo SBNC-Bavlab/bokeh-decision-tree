@@ -7,18 +7,31 @@
 </head>
 
 <body>
-  <div style="width: 70%; margin: 0 auto;">
+  <div style="width: 100%">
     <h1 style="color:slateblue; text-align:center;" >Visualization of Decision Trees</h1>
-    <div style="margin-left: auto; margin-right: auto; width: 40em; font-family: Arial; text-align: center" >We are a group of undergraduate student working on research project. In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.</div>
-    <button onclick="hide()" style="alignment: left; border-radius: 8px;">About</button>
+    <div style="margin-left: auto; margin-right: auto; width: 40em; font-family: Arial; text-align: center" >We are a group of undergraduate student working on research project. In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.
+    <br>Our first stop is Decision Tree apparently</div>
+    <button onclick="hide()" style="alignment: left">About</button>
     <div id="Bokeh" style="display: block; margin-left: auto; margin-right: auto">{{ script|safe }}</div>
 
     <div id="About" style="text-align:center; margin-left: auto; margin-right: auto; display: none">
-      <h2 style="color:dimgrey; text-align:center" >About</h2>
-      <hr style="width: 10%; margin-left: auto; margin-right: auto;">
-      <a href="http://analyticslab.sabanciuniv.edu/">
-        <img src="https://pbs.twimg.com/profile_images/730662586992230400/lPApNiEi_400x400.jpg" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
-      </a>
+        <h2 style="color:dimgrey; text-align:center" >About</h2>
+        <hr style="width: 10%; margin-left: auto; margin-right: auto;">
+        <a href="http://analyticslab.sabanciuniv.edu/">
+            <img src="https://pbs.twimg.com/profile_images/730662586992230400/lPApNiEi_400x400.jpg" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        </a>
+        <br>
+
+        <img src="{{ url_for('static', filename='onur.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        <a style="vertical-align: top">Onur Yigit Arpalı</a>&emsp;
+        <img src="{{ url_for('static', filename='evrim.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        <a style="vertical-align: top">Evrim Özel</a>&emsp;
+        <img src="{{ url_for('static', filename='ziya.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        <a style="vertical-align: top">Ziya Erkoc</a>&emsp;
+        <img src="{{ url_for('static', filename='artun_gs.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        <a style="vertical-align: top">Artun Sarıoğlu</a>
+        <img src="{{ url_for('static', filename='umut.jpeg') }}" style="width: 12%; height: 20%; margin-left: auto; margin-right: auto;">
+        <a style="vertical-align: top">Umut Çiftçi</a>
     </div>
   </div>
 </body>
