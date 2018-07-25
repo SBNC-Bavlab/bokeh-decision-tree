@@ -137,7 +137,7 @@ def distribute_by_attribute(attribute_name_var, instances_var):
     return distribution
 
 
-def child_generator(node_itself_var):#
+def child_generator(node_itself_var):
     """
         Generate children and set them to their parent
     """
@@ -273,7 +273,7 @@ def tree_distribution(attribute_list_var, instances_var, set_root_attribute):
             continue
         child_list = child_generator(node)
         for child in child_list:
-            if child.decision != None:
+            if child.decision is not None:
                 continue
             else:
                 q.put(child)

@@ -9,8 +9,13 @@
 <body>
   <div style="width: 100%; position: relative; margin: 0 auto;">
     <h1 style="color:slateblue; text-align:center;" >Visualization of Decision Trees</h1>
-    <div style="margin-left: auto; margin-right: auto; width: 40em; font-family: Arial; text-align: center" >We are a group of undergraduate student working on research project. In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.
-    <br>Our first stop is Decision Tree apparently</div>
+    <div style="margin-left: auto; margin-right: auto; width: 40em; font-family: Arial; text-align: center" >
+        We are a group of undergraduate student working on research project. In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.
+        <br>Our first stop is Decision Trees apparently.
+        <br> Datasets: <a href="https://archive.ics.uci.edu/ml/datasets/lenses"> Lenses</a>
+                       <a> - </a>
+                       <a href="https://archive.ics.uci.edu/ml/datasets/mushroom"> Mushrooms</a>
+    </div>
     <div class="button" align="center">
       <button onclick="hide()" style="alignment: left">About</button>
     </div>
@@ -24,16 +29,21 @@
         </a>
         <br>
 
-        <img src="{{ url_for('static', filename='onur.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
-        <a style="vertical-align: top">Onur Yigit Arpalı</a>&emsp;
-        <img src="{{ url_for('static', filename='evrim.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
-        <a style="vertical-align: top">Evrim Özel</a>&emsp;
-        <img src="{{ url_for('static', filename='ziya.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
-        <a style="vertical-align: top">Ziya Erkoc</a>&emsp;
-        <img src="{{ url_for('static', filename='artun_gs.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
-        <a style="vertical-align: top">Artun Sarıoğlu</a>
-        <img src="{{ url_for('static', filename='umut.jpeg') }}" style="width: 12%; height: 20%; margin-left: auto; margin-right: auto;">
-        <a style="vertical-align: top">Umut Çiftçi</a>
+        <a href="http://www.linkedin.com/in/onur-yigit-arpali">
+            <img src="{{ url_for('static', filename='onur.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        </a>
+        <a href="https://www.linkedin.com/in/evrimo/">
+            <img src="{{ url_for('static', filename='evrim.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        </a>
+        <a href="https://www.linkedin.com/in/ziyaerkoc/">
+            <img src="{{ url_for('static', filename='ziya.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        </a>
+        <a href="https://www.linkedin.com/in/artun-sar%C4%B1oglu-7b5107159/">
+            <img src="{{ url_for('static', filename='artun_gs.jpg') }}" style="width: 10%; height: 10%; margin-left: auto; margin-right: auto;">
+        </a>
+        <a href="">
+            <img src="{{ url_for('static', filename='umut.jpeg') }}" style="width: 12%; height: 20%; margin-left: auto; margin-right: auto;">
+        </a>
     </div>
   </div>
 </body>
