@@ -20,7 +20,6 @@ circles = best_circles = active_attributes_list = data_source = \
     best_arrow_data_source = tree_tab = None
 periods = groups = list()
 width = depth = acc = int()
-text_props = dict()
 attr_info = Paragraph(text="""
    Choose Attributes:
 """)
@@ -101,7 +100,7 @@ def create_figure():
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source,\
         attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select,\
         dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles,\
-        best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props
+        best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source
 
     active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
     source, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], selected_root)
@@ -113,7 +112,6 @@ def create_figure():
     df = elements.copy()
     get_new_data_source(df)
     data_source = ColumnDataSource(data=df)
-    text_props = {"source": data_source, "text_align": "center", "text_baseline": "middle"}
     p, arrow_data_source, circles = create_plot("customized")
 
     best_root_plot_data = data_source.data.copy()
@@ -285,21 +283,11 @@ def create_plot(mode):
                          name="circles", legend="attribute_type",
                          color=factor_cmap('attribute_type',
                                            palette=get_all_colors(), factors=Instance().all_attr_list))
-    _p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=_p.x_range),
-            name="detailed_text", text="nonLeafNodes_stat", **text_props, text_font_size="7pt")
-
-    _p.text(x="y", y=dodge("x", 0.3, range=_p.x_range), name="detailed_text", text="attribute_type", **text_props,
-            text_font_size="8pt", text_font_style="bold")
-
-    _p.text(x="y", y=dodge("x", -0.3, range=_p.x_range), name="detailed_text", text="instances", **text_props,
-            text_font_size="8pt")
-    _p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props,
-            text_font_size="8pt")
-
-    _p.select(name="detailed_text").visible = False
 
     _p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
-            name="decision_text", text="decision", **text_props, text_font_size="8pt")
+            name="decision_text", text="decision",
+            source=data_source if mode=="customized" else best_root_plot_data_source,
+            text_align="center", text_baseline= "middle", text_font_size="8pt")
 
     # Final settings
     _p.outline_line_color = "white"
