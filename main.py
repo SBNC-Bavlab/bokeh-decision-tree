@@ -170,7 +170,7 @@ def toggle_mode_set(new):
     best_root_plot.select(name="circles").visible = not new
     best_root_plot.select(name="detailed_text").visible = new
 
-    if decision_button.label == "Hide Labels":
+    if decision_button.label == "Show Labels":
         p.select(name="decision_text").visible = not new
         best_root_plot.select(name="decision_text").visible = not new
     decision_button.disabled = new
@@ -183,11 +183,11 @@ def turn_decision_off(new):
     if new:
         p.select(name="decision_text").visible = True
         best_root_plot.select(name="decision_text").visible = True
-        decision_button.label = "Show Labels"
+        decision_button.label = "Hide Labels"
     else:
         p.select(name="decision_text").visible = False
         best_root_plot.select(name="decision_text").visible = False
-        decision_button.label = "Hide Labels"
+        decision_button.label = "Show Labels"
 
 
 decision_button.on_click(turn_decision_off)
@@ -200,11 +200,11 @@ def turn_arrow_labels_off(new):
     if new:
         p.select(name="arrowLabels").visible = True
         best_root_plot.select(name="arrowLabels").visible = True
-        arrow_button.label = "Show Arrow Labels"
+        arrow_button.label = "Hide Arrow Labels"
     else:
         p.select(name="arrowLabels").visible = False
         best_root_plot.select(name="arrowLabels").visible = False
-        arrow_button.label = "Hide Arrow Labels"
+        arrow_button.label = "Show Arrow Labels"
 
 
 arrow_button.on_click(turn_arrow_labels_off)
