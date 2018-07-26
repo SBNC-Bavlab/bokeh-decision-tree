@@ -8,7 +8,6 @@ from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
 from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
 from Decision_Tree.Plot.instance import Instance
-from bokeh.io import show
 from bokeh.io import curdoc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -364,4 +363,4 @@ def draw_arrow(source, _p, mode="draw"):
                      text_font_size="8pt", text_color="darkgray", source=_arrow_data_source)
     return _arrow_data_source, label
 curdoc().add_root(create_figure())
-curdoc().title = "Selam"
+curdoc().title = "Decision Tree Visualizer"
