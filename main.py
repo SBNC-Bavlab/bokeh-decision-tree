@@ -159,22 +159,6 @@ def modify_test_percentage(_attr, _old, new):
 dataset_slider.on_change('value', modify_test_percentage)
 
 
-def toggle_mode_set(new):
-    """
-    toggles settings
-    """
-    p.select(name="circles").visible = not new
-    p.select(name="detailed_text").visible = new
-
-    best_root_plot.select(name="circles").visible = not new
-    best_root_plot.select(name="detailed_text").visible = new
-
-    if decision_button.label == "Show Labels":
-        p.select(name="decision_text").visible = not new
-        best_root_plot.select(name="decision_text").visible = not new
-    decision_button.disabled = new
-
-
 def turn_decision_off(new):
     """
     turn decision text on/off
