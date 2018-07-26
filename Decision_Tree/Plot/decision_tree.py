@@ -27,8 +27,8 @@ attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance().attr_list
                                            if attr != Instance().attr_list[-1]],
                                    active=[i for i, attr in enumerate(Instance().attr_list)])
 apply_changes_button = Button(label="Apply Changes", button_type="success")
-decision_button = Toggle(label="Hide Labels", button_type="warning")
-arrow_button = Toggle(label="Hide Arrow Labels", button_type="warning")
+decision_button = Toggle(label="Show Labels", button_type="warning")
+arrow_button = Toggle(label="Show Arrow Labels", button_type="warning")
 root_select = Select(title="Choose Root Attribute:",
                      options=['None'] + Instance().attr_list[:-1],
                      value="None")
@@ -114,6 +114,10 @@ def create_figure():
     best_root_plot_data = data_source.data.copy()
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
     best_root_plot, best_arrow_data_source, best_circles = create_plot("optimal")
+    p.select(name="decision_text").visible = False
+    best_root_plot.select(name="decision_text").visible = False
+    p.select(name="arrowLabels").visible = False
+    best_root_plot.select(name="arrowLabels").visible = False
 
     tab1 = Panel(child=p, title="New Tree with Selected Root")
     tab2 = Panel(child=best_root_plot, title="Ideal Tree with Gini Index")
@@ -174,12 +178,12 @@ def turn_decision_off(new):
     turn decision text on/off
     """
     if new:
-        p.select(name="decision_text").visible = False
-        best_root_plot.select(name="decision_text").visible = False
-        decision_button.label = "Show Labels"
-    else:
         p.select(name="decision_text").visible = True
         best_root_plot.select(name="decision_text").visible = True
+        decision_button.label = "Show Labels"
+    else:
+        p.select(name="decision_text").visible = False
+        best_root_plot.select(name="decision_text").visible = False
         decision_button.label = "Hide Labels"
 
 
@@ -191,12 +195,12 @@ def turn_arrow_labels_off(new):
     turn arrow labels on/off
     """
     if new:
-        p.select(name="arrowLabels").visible = False
-        best_root_plot.select(name="arrowLabels").visible = False
-        arrow_button.label = "Show Arrow Labels"
-    else:
         p.select(name="arrowLabels").visible = True
         best_root_plot.select(name="arrowLabels").visible = True
+        arrow_button.label = "Show Arrow Labels"
+    else:
+        p.select(name="arrowLabels").visible = False
+        best_root_plot.select(name="arrowLabels").visible = False
         arrow_button.label = "Hide Arrow Labels"
 
 
