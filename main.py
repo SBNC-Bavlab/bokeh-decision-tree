@@ -15,9 +15,9 @@ from bokeh.io import curdoc
 """""""""""""""""""""""""""""""""""""""GLOBAL VARIABLES START"""""""""""""""""""""""""""""""""
 """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
 
-circles = best_circles = active_attributes_list = data_source = \
-    level_width = p = arrow_data_source = best_root_plot_data_source = best_root_plot = \
-    best_arrow_data_source = tree_tab = None
+circles = best_circles = active_attributes_list = data_source = None
+level_width = p = arrow_data_source = best_root_plot_data_source = best_root_plot = None
+best_arrow_data_source = tree_tab = None
 periods = groups = list()
 width = depth = acc = int()
 attr_info = Paragraph(text="""
@@ -66,8 +66,8 @@ def modify_individual_plot(mode, root):
     """
     modular plot
     """
-    global p, data_source, active_attributes_list, arrow_data_source, width, depth, level_width, acc, periods, groups,\
-        best_root_plot, best_root_plot_data_source, best_arrow_data_source
+    global p, data_source, active_attributes_list, arrow_data_source, width, depth, level_width, acc, periods, groups
+    global best_root_plot, best_root_plot_data_source, best_arrow_data_source
 
     data, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], root)
     data = pd.DataFrame.from_dict(data)
@@ -97,10 +97,10 @@ def create_figure():
     Position the widgets and figures according to rows and columns
     :return: send layout of widgets and plots back to Bokeh
     """
-    global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source,\
-        attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select,\
-        dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles,\
-        best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source
+    global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source
+    global attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select
+    global dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles
+    global best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source
 
     active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
     source, width, depth, level_width, acc = get_bokeh_data(active_attributes_list
@@ -279,8 +279,8 @@ def create_plot(mode):
                 x_range=groups, y_range=list(periods),
                 tooltips=TOOLTIPS)
     _p.axis.visible = False
-    _arrow_data_source, label = \
-        draw_arrow(data_source.data if mode == "customized" else best_root_plot_data_source.data, _p)
+    _arrow_data_source, label = draw_arrow(data_source.data
+                                           if mode == "customized" else best_root_plot_data_source.data, _p)
     _p.toolbar.active_scroll = wheel
     _p.add_layout(label)
     _circles = _p.circle("y", "x", radius=circle_radius, radius_units='screen',
