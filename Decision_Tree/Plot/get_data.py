@@ -7,7 +7,7 @@ color = []
 
 
 for _ in range(30):
-    color.append('#%06X' % randint(0, 0xFFFFFF))
+    color.append('#%06x' % randint(0, 0xFFFFFF))
 
 
 def set_active_attr(active_attr_list):
@@ -56,7 +56,7 @@ def set_new_dataset(new):
     shuffle(data)
     try:
         Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict,
-                                     Instance().test_percentage)
+                          Instance().test_percentage)
     except TypeError:
         Instance(data, attr_values, attr_list, attr_values_dict, attr_dict)
 
