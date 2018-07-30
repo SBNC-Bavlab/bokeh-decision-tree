@@ -39,6 +39,7 @@ TOOLTIPS = [
     ("Decision", "@{decision}")
 ]
 
+
 def get_new_data_source(df):
     ''' modular data source '''
     df["nonLeafNodes_stat"] = [str(x) for x in df["nonLeafNodes_stat"]]
