@@ -34,9 +34,7 @@ def modify_new_values(tmp_attr_names, attr_names_list, attr_dictionary):
 
 
 def set_new_dataset(new):
-    """
-        set new data set and its positions
-    """
+    ''' set new data set and its positions '''
     data = []
     attr_values = []
     attr_list = []
@@ -63,7 +61,5 @@ def set_new_dataset(new):
 
 
 def get_all_colors():
-    """
-    :return: Color Options
-    """
+    ''' :return: Color Options '''
     return color

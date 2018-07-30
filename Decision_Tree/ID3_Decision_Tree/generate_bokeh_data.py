@@ -5,7 +5,7 @@ from Decision_Tree.Plot.instance import Instance
 
 
 def get_depth(node, id_index, visited={}):
-    """ Calculate depth of the tree """
+    ''' Calculate depth of the tree '''
     if node.decision in Instance().attr_values_dict[Instance().attr_list[-1]]:
         node.name = Instance().attr_list[-1]
 
@@ -26,7 +26,7 @@ def get_depth(node, id_index, visited={}):
 
 
 def get_width(node, level):
-    """ Calculate width of the level"""
+    ''' Calculate width of the level '''
     if node is None:
         return 0
     if level == 1:
@@ -38,7 +38,7 @@ def get_width(node, level):
 
 
 def get_max_width(node, depth):
-    """ Calculate max width of the tree """
+    ''' Calculate max width of the tree '''
     max_width = 0
     h = depth
     level_widths = []
@@ -51,7 +51,7 @@ def get_max_width(node, depth):
 
 
 def generate_node_list(root, visited):
-    """ Push tree node to the list according to the breadth first search """
+    ''' Push tree node to the list according to the breadth first search '''
     node_list = []
 
     queue = [root]
@@ -72,7 +72,7 @@ def generate_node_list(root, visited):
 
 
 def fill_source(source, node_list):
-    """ Fill the source dictionary to pass bokeh"""
+    ''' Fill the source dictionary to pass bokeh '''
     for node in node_list:
         source["x"].append(node.coord[0])
 
@@ -106,7 +106,7 @@ def fill_source(source, node_list):
 
 
 def get_bokeh_data(active_attr_list=[], set_root_attribute=""):
-    """ Generate tree, fill source dictionary and return corresponding values to the plotting functions"""
+    ''' Generate tree, fill source dictionary and return corresponding values to the plotting functions '''
     id_index = 0
     root, acc = generate_tree(set_root_attribute, active_attr_list)
 
