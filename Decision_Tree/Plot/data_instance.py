@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Singleton class for data set and its information
-"""
+''' Singleton class for data set and its information '''
 from os.path import dirname
 import os
 
 
 class data_instance:
-    """
-        Singleton class
-    """
+    ''' Singleton class '''
     def __init__(self, data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage=10):
         self.data = data
         self.attr_values = attr_values
@@ -26,9 +22,7 @@ class data_instance:
                               "spore-print-color", "population", "habitat", "class"]
 
     def update(self, data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage):
-        """
-            Update Singleton instance values
-        """
+        ''' Update Singleton instance values '''
         self.data = data
         self.attr_values = attr_values
         self.attr_list = attr_list
@@ -37,9 +31,7 @@ class data_instance:
         self.test_percentage = test_percentage
 
     def update_data_set(self, file_name):
-        """
-            Updated uploaded data set and remove previous one
-        """
+        ''' Updated uploaded data set and remove previous one '''
         if not self.data_set and file_name not in ["car", "lens"]:
             self.data_set = file_name
         else:
