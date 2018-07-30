@@ -114,7 +114,7 @@ def get_bokeh_data(instance, active_attr_list=[], set_root_attribute=""):
     global data_instance
     data_instance = instance
     id_index = 0
-    root, acc = generate_tree(set_root_attribute, active_attr_list)
+    root, acc = generate_tree(data_instance, set_root_attribute, active_attr_list)
 
     visited = {}
     depth = get_depth(root, id_index, visited)
