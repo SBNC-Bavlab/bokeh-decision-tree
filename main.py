@@ -217,7 +217,7 @@ root_select.on_change('value', update_root)
 def change_dataset(_attr, _old, new):
     ''' use selected data set for the tree '''
     global selected_root, Instance, test_percantage
-    set_new_dataset(new, test_percantage)
+    Instance = set_new_dataset(new, test_percantage)
     selected_root = ""
     apply_changes()
     attribute_checkbox.labels = [attr for attr in Instance.attr_list if attr != Instance.attr_list[-1]]
