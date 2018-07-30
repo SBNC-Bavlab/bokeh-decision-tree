@@ -7,7 +7,6 @@ from bokeh.layouts import widgetbox, layout
 from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
 from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
-from Decision_Tree.Plot.instance import Instance
 from bokeh.io import curdoc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -19,20 +18,21 @@ level_width = p = arrow_data_source = best_root_plot_data_source = best_root_plo
 best_arrow_data_source = tree_tab = None
 periods = groups = list()
 width = depth = acc = int()
+test_percantage = 10
 attr_info = Paragraph(text="""
    Choose Attributes:
 """)
-set_new_dataset("lens")
+Instance = set_new_dataset("lens")
 arrow_list = {"current": [], "previous": []}
 selected_root = ""
-attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance().attr_list
-                                           if attr != Instance().attr_list[-1]],
-                                   active=[i for i, attr in enumerate(Instance().attr_list)])
+attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance.attr_list
+                                           if attr != Instance.attr_list[-1]],
+                                   active=[i for i, attr in enumerate(Instance.attr_list)])
 apply_changes_button = Button(label="Apply Changes", button_type="success")
 decision_button = Toggle(label="Show Labels", button_type="warning")
 arrow_button = Toggle(label="Show Arrow Labels", button_type="warning")
 root_select = Select(title="Choose Root Attribute:",
-                     options=['None'] + Instance().attr_list[:-1],
+                     options=['None'] + Instance.attr_list[:-1],
                      value="None")
 dataset_select = Select(title="Choose Data Set:", value="lens", options=["lens", "mushrooms"])
 dataset_slider = Slider(start=10, end=50, value=10, step=5, title="Test Set Percentage Split")
@@ -66,9 +66,11 @@ def modify_individual_plot(mode, root):
     modular plot
     """
     global p, data_source, active_attributes_list, arrow_data_source, width, depth, level_width, acc, periods, groups
-    global best_root_plot, best_root_plot_data_source, best_arrow_data_source
+    global best_root_plot, best_root_plot_data_source, best_arrow_data_source, Instance
 
-    data, width, depth, level_width, acc = get_bokeh_data(active_attributes_list + [Instance().attr_list[-1]], root)
+    data, width, depth, level_width, acc = get_bokeh_data(Instance,
+                                                          active_attributes_list + [Instance.attr_list[-1]],
+                                                          root)
     data = pd.DataFrame.from_dict(data)
     get_new_data_source(data)
 
@@ -99,11 +101,12 @@ def create_figure():
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source
     global attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select
     global dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles
-    global best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source
+    global best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, Instance
 
-    active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
-    source, width, depth, level_width, acc = get_bokeh_data(active_attributes_list
-                                                            + [Instance().attr_list[-1]], selected_root)
+    active_attributes_list = [attr for attr in Instance.attr_list if attr != Instance.attr_list[-1]]
+    source, width, depth, level_width, acc = get_bokeh_data(Instance,
+                                                            active_attributes_list + [Instance.attr_list[-1]],
+                                                            selected_root)
     # X and y range calculated
     periods = [str(i) for i in range(0, width+1)]
     groups = [str(x) for x in range(0, depth+2)]
@@ -138,10 +141,10 @@ def update_attributes(new):
     """
     create a new active_attributes_list when any of the checkboxes are selected
     """
-    global selected_root
+    global selected_root, Instance
     active_attributes_list[:] = []
     for i in new:
-        active_attributes_list.append(Instance().attr_list[i])
+        active_attributes_list.append(Instance.attr_list[i])
     if selected_root != '' and selected_root not in active_attributes_list:
         apply_changes_button.disabled = True
     else:
@@ -152,9 +155,10 @@ attribute_checkbox.on_click(update_attributes)
 
 
 def modify_test_percentage(_attr, _old, new):
-    Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
-                      Instance().attr_values_dict, Instance().attr_dict,
-                      new)
+    global Instance, test_percantage
+    test_percantage = new
+    Instance.update(Instance.data, Instance.attr_values, Instance.attr_list,
+                    Instance.attr_values_dict, Instance.attr_dict, new)
 
 
 dataset_slider.on_change('value', modify_test_percentage)
@@ -214,9 +218,9 @@ def update_root(_attr, _old, new):
     """
     change root attribute to be used for creating a new tree
     """
-    global selected_root
+    global selected_root, Instance
     new = root_select.options.index(new)
-    method_type_selected = Instance().attr_list[new - 1]
+    method_type_selected = Instance.attr_list[new - 1]
     if new == 0:
         selected_root = ''
         apply_changes_button.disabled = False
@@ -233,15 +237,15 @@ root_select.on_change('value', update_root)
 
 def change_dataset(_attr, _old, new):
     """
-    use selected dataset for the tree
+    use selected data set for the tree
     """
-    global selected_root
-    set_new_dataset(new)
+    global selected_root, Instance, test_percantage
+    set_new_dataset(new, test_percantage)
     selected_root = ""
     apply_changes()
-    attribute_checkbox.labels = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
-    attribute_checkbox.active = [i for i, attr in enumerate(Instance().attr_list)]
-    root_select.options = ['None'] + [attr for attr in Instance().attr_list[:-1]]
+    attribute_checkbox.labels = [attr for attr in Instance.attr_list if attr != Instance.attr_list[-1]]
+    attribute_checkbox.active = [i for i, attr in enumerate(Instance.attr_list)]
+    root_select.options = ['None'] + [attr for attr in Instance.attr_list[:-1]]
 
 
 dataset_select.on_change('value', change_dataset)
@@ -271,6 +275,7 @@ def create_plot(mode):
     :param mode: customized or optimal?
     :return: plot p and the arrow data source
     """
+    global Instance
     title = "Decision Tree " + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1)) if acc else "")
     hover = HoverTool(names=["circles"])
     wheel = WheelZoomTool()
@@ -286,7 +291,7 @@ def create_plot(mode):
                          source=data_source if mode == "customized" else best_root_plot_data_source,
                          name="circles", legend="attribute_type",
                          color=factor_cmap('attribute_type',
-                                           palette=get_all_colors(), factors=Instance().all_attr_list))
+                                           palette=get_all_colors(), factors=Instance.all_attr_list))
 
     _p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
             name="decision_text", text="decision",
@@ -312,14 +317,15 @@ def draw_arrow(source, _p, mode="draw"):
     :param mode: when mode isn't draw, it means that the function is being called only for getting the arrow data source
     :return: returns arrow data source, arrows and labels
     """
+    global Instance
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
                          "label_name": [], "instances": [], "angle": [], "xs": [], "ys": []}
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
             offset = sum(level_width[:i])
-            if source["attribute_type"][offset + j] != Instance().attr_list[-1]:
-                children_names = Instance().attr_values_dict[source["attribute_type"][offset + j]]
+            if source["attribute_type"][offset + j] != Instance.attr_list[-1]:
+                children_names = Instance.attr_values_dict[source["attribute_type"][offset + j]]
                 number_of_children = len(children_names)
                 for index in range(number_of_children):
                     x_start = source["y"][offset + j]
