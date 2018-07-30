@@ -10,10 +10,6 @@ from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
 from Decision_Tree.Plot.instance import Instance
 from bokeh.io import curdoc
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""GLOBAL VARIABLES START"""""""""""""""""""""""""""""""""
-"""vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
-
 circles = best_circles = active_attributes_list = data_source = None
 level_width = p = arrow_data_source = best_root_plot_data_source = best_root_plot = None
 best_arrow_data_source = tree_tab = None
@@ -42,11 +38,6 @@ TOOLTIPS = [
     ("Instance Number", "@{instances}"),
     ("Decision", "@{decision}")
 ]
-
-"""^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^""
-"""""""""""""""""""""""""""""""""" GLOBAL VARIABLES END """""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 
 def get_new_data_source(df):
     ''' modular data source '''
@@ -87,10 +78,11 @@ def modify_individual_plot(mode, root):
 
 
 def create_figure():
-    '''
-    get data from generate_bokeh_data and create the data source. Define widgets and create the two figures.
+    ''' get data from generate_bokeh_data and create the data source. Define widgets and create the two figures.
     Position the widgets and figures according to rows and columns
-    :return: send layout of widgets and plots back to Bokeh
+
+    Returns:
+        layout of widgets and plots
     '''
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source
     global attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select
@@ -169,9 +161,7 @@ def toggle_mode_set(new):
 
 
 def turn_decision_off(new):
-    '''
-    turn decision text on/off
-    '''
+    ''' turn decision text on/off '''
     if new:
         p.select(name="decision_text").visible = True
         best_root_plot.select(name="decision_text").visible = True
@@ -186,9 +176,7 @@ decision_button.on_click(turn_decision_off)
 
 
 def turn_arrow_labels_off(new):
-    '''
-    turn arrow labels on/off
-    '''
+    ''' turn arrow labels on/off '''
     if new:
         p.select(name="arrowLabels").visible = True
         best_root_plot.select(name="arrowLabels").visible = True
@@ -203,9 +191,7 @@ arrow_button.on_click(turn_arrow_labels_off)
 
 
 def update_root(_attr, _old, new):
-    '''
-    change root attribute to be used for creating a new tree
-    '''
+    ''' change root attribute to be used for creating a new tree '''
     global selected_root
     new = root_select.options.index(new)
     method_type_selected = Instance().attr_list[new - 1]
@@ -224,9 +210,7 @@ root_select.on_change('value', update_root)
 
 
 def change_dataset(_attr, _old, new):
-    '''
-    use selected dataset for the tree
-    '''
+    ''' use selected dataset for the tree '''
     global selected_root
     set_new_dataset(new)
     selected_root = ""
@@ -240,8 +224,7 @@ dataset_select.on_change('value', change_dataset)
 
 
 def apply_changes():
-    '''
-    compute new data source to be used for the new tree. change values of several variables to be used before
+    ''' compute new data source to be used for the new tree. change values of several variables to be used before
     sending them to get_bokeh_data
     '''
     modify_individual_plot("customized", selected_root)
@@ -258,10 +241,12 @@ apply_changes_button.on_click(apply_changes)
 
 
 def create_plot(mode):
-    '''
-    create glyphs, text and arrows and insert them into the figures
-    :param mode: customized or optimal?
-    :return: plot p and the arrow data source
+    ''' create glyphs, text and arrows and insert them into the figures
+
+    Args:
+        mode (string) customized or optimal?
+    Returns:
+        plot p and the arrow data source
     '''
     title = "Decision Tree " + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1)) if acc else "")
     hover = HoverTool(names=["circles"])
@@ -297,12 +282,14 @@ def create_plot(mode):
 
 
 def draw_arrow(source, _p, mode="draw"):
-    '''
-    draws and returns arrows and the labels. calculates arrow widths from number of instances
-    :param source: source
-    :param _p: plot p to be drawn on
-    :param mode: when mode isn't draw, it means that the function is being called only for getting the arrow data source
-    :return: returns arrow data source, arrows and labels
+    ''' draws and returns arrows and the labels. calculates arrow widths from number of instances
+
+    Args:
+        source (ColumnDataSource) : source
+        _p: plot p to be drawn on
+        mode (string) : when mode isn't draw, it means that the function is being called only for getting the arrow data source
+    Returns:
+        arrow data source, arrows and labels
     '''
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
                          "label_name": [], "instances": [], "angle": [], "xs": [], "ys": []}

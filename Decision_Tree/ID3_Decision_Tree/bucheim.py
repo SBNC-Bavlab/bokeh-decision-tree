@@ -13,10 +13,9 @@ def tree_layout(node):
 
 
 def first_walk(node):
-    '''
-        Calling FIRSTWALK(node) computes a preliminary x-coordinate for node. Before that, FIRSTWALK is
-        applied recursively to the children of node, as well as the function APPORTION. After spacing out the
-        children by calling EXECUTESHIFTS, the node  is placed to the midpoint of its outermost children.
+    ''' Calling FIRSTWALK(node) computes a preliminary x-coordinate for node. Before that, FIRSTWALK is
+    applied recursively to the children of node, as well as the function APPORTION. After spacing out the
+    children by calling EXECUTESHIFTS, the node  is placed to the midpoint of its outermost children.
     '''
     if node.decision:  # if node is a leaf
         node.prelim = 0
@@ -42,11 +41,10 @@ def first_walk(node):
 
 
 def apportion(node, default_ancestor):
-    '''
-        The procedure APPORTION (again following Walker's notation) is the core of the algorithm. Here a
-        new subtree is combined with the previous subtrees. As in the Reingold-Tilford algorithm, threads
-        are used to traverse the inside and outside contours of the left and right subtree up to the highest
-        common level.
+    ''' The procedure APPORTION (again following Walker's notation) is the core of the algorithm. Here a
+    new subtree is combined with the previous subtrees. As in the Reingold-Tilford algorithm, threads
+    are used to traverse the inside and outside contours of the left and right subtree up to the highest
+    common level.
     '''
     if node.parentPointer and node.parentPointer.children[0] != node:
         index_node = node.parentPointer.children.index(node)
@@ -86,10 +84,9 @@ def apportion(node, default_ancestor):
 
 
 def next_left(node):
-    '''
-        It returns the successor of node on this contour.This successor is either given by
-        the leftmost child of node or by the thread of node. The function returns None if
-        and only if node is on the highest level of its subtree.
+    ''' It returns the successor of node on this contour.This successor is either given by
+    the leftmost child of node or by the thread of node. The function returns None if
+    and only if node is on the highest level of its subtree.
     '''
     if node.children:  # if node has a child
         return node.children[0]
@@ -108,12 +105,11 @@ def next_right(node):
 
 
 def move_subtree(node_left, node_right, shift):
-    '''
-        Shifting a subtree can be done in linear time if performed as explained above. Calling
-        MOVESUBTREE(wl,wr,shift) first shifts the current subtree, rooted at wr. This is done by increasing
-        prelim(wr) and mod(wr) by shift. All other shifts, applied to the smaller subtrees between wl and wr,
-        are performed later by EXECUTESHIFTS. To prepare this, we have to adjust change(wr), shift(wr),
-        and change(wl).
+    ''' Shifting a subtree can be done in linear time if performed as explained above. Calling
+    MOVESUBTREE(wl,wr,shift) first shifts the current subtree, rooted at wr. This is done by increasing
+    prelim(wr) and mod(wr) by shift. All other shifts, applied to the smaller subtrees between wl and wr,
+    are performed later by EXECUTESHIFTS. To prepare this, we have to adjust change(wr), shift(wr),
+    and change(wl).
     '''
     subtrees = node_right.order_number - node_left.order_number
     shift_subtrees = float(shift) / subtrees
@@ -125,9 +121,8 @@ def move_subtree(node_left, node_right, shift):
 
 
 def execute_shifts(node):
-    '''
-        The function only needs one traversal of the children of v to
-        execute all shifts computed and memorized in MOVESUBTREE.
+    ''' The function only needs one traversal of the children of v to
+    execute all shifts computed and memorized in MOVESUBTREE.
     '''
     shift = 0
     change = 0
@@ -139,9 +134,8 @@ def execute_shifts(node):
 
 
 def ancestor(node_in_left, node, default_ancestor):
-    '''
-        The function ANCESTOR returns the left one of the greatest
-        distinct ancestors of vil and its right neighbor.
+    ''' The function ANCESTOR returns the left one of the greatest
+    distinct ancestors of vil and its right neighbor.
     '''
     if node_in_left.ancestor in node.parentPointer.children:  # if the ancestor is a sibling of the node
         return node_in_left.ancestor
@@ -150,9 +144,8 @@ def ancestor(node_in_left, node, default_ancestor):
 
 
 def second_walk(node, m=0):
-    '''
-        The function is used to compute all real x-coordinates
-        by summing up the modifiers recursively.
+    ''' The function is used to compute all real x-coordinates
+    by summing up the modifiers recursively.
     '''
     node.coord = (node.depth, node.prelim + m + 2)
     for child in node.children:

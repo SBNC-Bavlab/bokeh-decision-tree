@@ -31,8 +31,8 @@ class Node(object):
 
 def classify_list(attribute_name_var, instances_var):
     ''' Return a list that divide the instances according to the values of a attribute
-        For instance, there is a attribute which has values like "low", "med", "high"
-        There are 100 instances. For every instances, the attributes values distribute like [30, 40, 30]
+    For instance, there is a attribute which has values like "low", "med", "high"
+    There are 100 instances. For every instances, the attributes values distribute like [30, 40, 30]
     '''
     attribute = attrDictionary[attribute_name_var]
     attribute_index, attribute_values = attribute
@@ -50,10 +50,10 @@ def classify_list(attribute_name_var, instances_var):
 
 def get_distribution_list(attribute_name_var, instances_var):
     ''' Return nested list that divide the instances according to the values of the label
-        For instance, there is a attribute which has values like "low", "med", "high"
-        There are 100 instances. For every instances, the number of instances distribute like [30, 40, 30]
-        For instance, label values are like "un_acc", "acc", "good", "v_good"
-        Instances divide according to the label values like [[10, 5, 15, 0], [10, 10, 10, 10], [4, 13, 3, 10]]
+    For instance, there is a attribute which has values like "low", "med", "high"
+    There are 100 instances. For every instances, the number of instances distribute like [30, 40, 30]
+    For instance, label values are like "un_acc", "acc", "good", "v_good"
+    Instances divide according to the label values like [[10, 5, 15, 0], [10, 10, 10, 10], [4, 13, 3, 10]]
     '''
     # build a distribution holder
     attribute = attrDictionary[attribute_name_var]
@@ -61,7 +61,6 @@ def get_distribution_list(attribute_name_var, instances_var):
     distribution = []
 
     # find distribution of class based of values of an attribute
-
     for attributeValue in attribute_values:
         local_distribution = [0] * len(classAttr)
 
@@ -349,9 +348,7 @@ def dataset_same(tmp_attr_names, attr_names_list):
 
 
 def generate_tree(set_root_attribute, active_attr_list):
-    '''
-        Generate tree
-    '''
+    ''' Generate tree '''
     global attrNamesList, attrDictionary, classAttr
     tmp_attr_names = set_active_attr(active_attr_list)
     attrNamesList, attrDictionary = copy.deepcopy(Instance().attr_list), copy.deepcopy(Instance().attr_dict)
