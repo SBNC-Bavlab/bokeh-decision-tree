@@ -12,7 +12,7 @@ for _ in range(30):
 
 
 def set_active_attr(active_attr_list):
-    """ Set attributes that are in use"""
+    ''' Set attributes that are in use '''
     # clear the list
     attr_names_list = []
     # fill again
@@ -22,7 +22,7 @@ def set_active_attr(active_attr_list):
 
 
 def modify_new_values(tmp_attr_names, attr_names_list, attr_dictionary):
-    """ Set new data set attributes """
+    ''' Set new data set attributes '''
     new_attr_names = []
     for attr in attr_names_list:
         if attr in tmp_attr_names:
