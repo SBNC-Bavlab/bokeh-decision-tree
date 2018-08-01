@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from src.tree.id3_decision_tree import generate_tree
 from src.tree.bucheim import tree_layout
 
@@ -8,7 +7,6 @@ data_instance = None
 
 def get_depth(node, id_index, visited={}):
     ''' Calculate depth of the tree '''
-    global data_instance
     if node.decision in data_instance.attr_values_dict[data_instance.attr_list[-1]]:
         node.name = data_instance.attr_list[-1]
 
@@ -76,7 +74,6 @@ def generate_node_list(root, visited):
 
 def fill_source(source, node_list):
     ''' Fill the source dictionary to pass bokeh '''
-    global data_instance
     for node in node_list:
         source["x"].append(node.coord[0])
 
