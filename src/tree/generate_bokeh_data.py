@@ -1,4 +1,4 @@
-from src.tree.id3_decision_tree import generate_tree
+from src.tree.id3_decision_tree import DecisionTree
 from src.tree.bucheim import tree_layout
 
 
@@ -111,7 +111,8 @@ def get_bokeh_data(instance, active_attr_list=[], set_root_attribute=""):
     global data_instance
     data_instance = instance
     id_index = 0
-    root, acc = generate_tree(data_instance, set_root_attribute, active_attr_list)
+    decision_tree = DecisionTree(data_instance)
+    root, acc = decision_tree.generate_tree(set_root_attribute, active_attr_list)
 
     visited = {}
     depth = get_depth(root, id_index, visited)
