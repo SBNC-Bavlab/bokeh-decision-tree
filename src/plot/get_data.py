@@ -1,7 +1,7 @@
 from os.path import dirname
 
 from random import randint, shuffle
-from src.plot.DataInstance import DataInstance
+from src.plot.data_instance import DataInstance
 
 color = []
 
