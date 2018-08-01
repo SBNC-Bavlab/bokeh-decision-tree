@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from Decision_Tree.ID3_Decision_Tree.id3_decision_tree import generate_tree
-from Decision_Tree.ID3_Decision_Tree.bucheim import tree_layout
+from src.tree.id3_decision_tree import generate_tree
+from src.tree.bucheim import tree_layout
 
 
 data_instance = None

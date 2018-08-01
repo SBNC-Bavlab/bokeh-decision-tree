@@ -2,7 +2,7 @@
 import copy
 from queue import Queue
 import random
-from Decision_Tree.Plot.get_data import set_active_attr, modify_new_values
+from src.plot.get_data import set_active_attr, modify_new_values
 
 data_instance = None
 

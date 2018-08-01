@@ -2,7 +2,7 @@
 from os.path import dirname
 
 from random import randint, shuffle
-from Decision_Tree.Plot.data_instance import data_instance
+from src.plot.data_instance import data_instance
 
 color = []
 

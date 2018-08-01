@@ -1,12 +1,12 @@
 import pandas as pd
 from bokeh.plotting import figure
-from bokeh.transform import dodge, factor_cmap
+from bokeh.transform import factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import widgetbox, layout
-from Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
+from src.tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
-from Decision_Tree.Plot.get_data import set_new_dataset, get_all_colors
+from src.plot.get_data import set_new_dataset, get_all_colors
 from bokeh.io import curdoc
 
 circles = best_circles = active_attributes_list = data_source = None
@@ -25,7 +25,6 @@ attribute_checkbox = CheckboxGroup(labels=[attr for attr in Instance.attr_list
                                            if attr != Instance.attr_list[-1]],
                                    active=[i for i, attr in enumerate(Instance.attr_list)])
 apply_changes_button = Button(label="Apply Changes", button_type="success")
-decision_button = Toggle(label="Show Labels", button_type="warning")
 arrow_button = Toggle(label="Show Arrow Labels", button_type="warning")
 root_select = Select(title="Choose Root Attribute:",
                      options=['None'] + Instance.attr_list[:-1],
@@ -68,16 +67,20 @@ def modify_individual_plot(mode, root):
         p.x_range.factors = groups = [str(x) for x in range(0, depth + 2)]
         arrow_data, _ = draw_arrow(data_source.data, p, "get_data")
         arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
-        p.title.text = "Decision Tree" + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1)) if acc else "")
+        test_size = int(len(Instance.data) * Instance.test_percentage / 100)
+        p.title.text = "Decision Tree" + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1))) \
+                       + "   (Test Size: " + str(test_size) + ", "\
+                       + "Train Size: " + str(int(len(Instance.data) - test_size)) + ")"
     else:
         best_root_plot_data_source.data = ColumnDataSource(data=data).data
         best_root_plot.y_range.factors = periods = [str(i) for i in range(0, width + 1)]
         best_root_plot.x_range.factors = groups = [str(x) for x in range(0, depth + 2)]
-        arrow_data, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
-                                   "get_data")
+        arrow_data, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot, "get_data")
         best_arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
-        best_root_plot.title.text = "Decision Tree" + ("\t\t\t\tAccuracy (%): "
-                                                       + str(round(acc * 100, 1)) if acc else "")
+        test_size = int(len(Instance.data) * Instance.test_percentage / 100)
+        best_root_plot.title.text = "Decision Tree" + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1))) \
+                       + "   (Test Size: " + str(test_size) + ", "\
+                       + "Train Size: " + str(int(len(Instance.data) - test_size)) + ")"
 
 
 def create_figure():
@@ -88,7 +91,7 @@ def create_figure():
         layout of widgets and plots
     '''
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source
-    global attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select
+    global attr_info, attribute_checkbox, apply_changes_button, arrow_button, root_select
     global dataset_select, dataset_slider, p, arrow_data_source, circles, best_circles
     global best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, Instance
 
@@ -119,7 +122,7 @@ def create_figure():
     tree_tab = Tabs(tabs=[tab1, tab2], width=p.plot_width)
 
     widgets = widgetbox(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
-                        decision_button, arrow_button, dataset_select, sizing_mode="stretch_both")
+                        arrow_button, dataset_select, sizing_mode="stretch_both")
 
     main_frame = layout([[widgets, tree_tab]])
     return main_frame
@@ -158,26 +161,6 @@ def toggle_mode_set(new):
 
     best_root_plot.select(name="circles").visible = not new
     best_root_plot.select(name="detailed_text").visible = new
-
-    if decision_button.label == "Show Labels":
-        p.select(name="decision_text").visible = not new
-        best_root_plot.select(name="decision_text").visible = not new
-    decision_button.disabled = new
-
-
-def turn_decision_off(new):
-    ''' turn decision text on/off '''
-    if new:
-        p.select(name="decision_text").visible = True
-        best_root_plot.select(name="decision_text").visible = True
-        decision_button.label = "Hide Labels"
-    else:
-        p.select(name="decision_text").visible = False
-        best_root_plot.select(name="decision_text").visible = False
-        decision_button.label = "Show Labels"
-
-
-decision_button.on_click(turn_decision_off)
 
 
 def turn_arrow_labels_off(new):
@@ -234,8 +217,6 @@ def apply_changes():
     '''
     modify_individual_plot("customized", selected_root)
     modify_individual_plot("optimal", "")
-    if decision_button.label == "Hide Labels":
-        p.select(name="decision_text").visible = True
     if arrow_button.label == "Hide Arrow Labels":
         p.select(name="arrowLabels").visible = True
     p.select(name="multi_lines").visible = True
@@ -254,10 +235,14 @@ def create_plot(mode):
         plot p and the arrow data source
     '''
     global Instance
-    title = "Decision Tree " + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1)) if acc else "")
+    test_size = int(len(Instance.data) * Instance.test_percentage / 100)
+    title = "Decision Tree " + ("\t\t\t\tAccuracy (%): " + str(round(acc * 100, 1))) \
+                                + "   (Test Size: " + str(test_size) + ", " \
+                                + "Train Size: " + str(int(len(Instance.data) - test_size)) + ")"
     hover = HoverTool(names=["circles"])
     wheel = WheelZoomTool()
-    _p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
+    wheel.zoom_on_axis = False
+    _p = figure(title=title, toolbar_location=None, tools=[hover, wheel, ResetTool(), PanTool()],
                 x_range=groups, y_range=list(periods),
                 tooltips=TOOLTIPS)
     _p.axis.visible = False
@@ -270,12 +255,6 @@ def create_plot(mode):
                          name="circles", legend="attribute_type",
                          color=factor_cmap('attribute_type',
                                            palette=get_all_colors(), factors=Instance.all_attr_list))
-
-    _p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
-            name="decision_text", text="decision",
-            source=data_source if mode == "customized" else best_root_plot_data_source,
-            text_align="center", text_baseline="middle", text_font_size="8pt")
-
     # Final settings
     _p.outline_line_color = "white"
     _p.grid.grid_line_color = None
@@ -347,7 +326,7 @@ def draw_arrow(source, _p, mode="draw"):
                       xs="xs", ys="ys", source=_arrow_data_source)
     label = LabelSet(x='x_avg', y='y_avg', angle="angle",
                      name="arrowLabels", text="label_name",
-                     text_font_size="8pt", text_color="darkgray", source=_arrow_data_source)
+                     text_font_size="8pt", text_color="darkgray", source=_arrow_data_source, text_align="center")
     return _arrow_data_source, label
 
 
