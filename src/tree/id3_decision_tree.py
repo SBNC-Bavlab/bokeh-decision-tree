@@ -188,7 +188,7 @@ class DecisionTree(object):
         return children
 
     def leaf_control(self, node_var):
-        """ Check if the node's instances distributed to certain value """
+        ''' Check if the node's instances distributed to certain value '''
         distributed_list = self.classify_list(self.data_instance.attr_list[-1], node_var.data)
         numbers_greater_than_zero = 0
         for p in distributed_list:
